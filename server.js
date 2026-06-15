@@ -392,6 +392,10 @@ app.post('/api/submit', async (req, res) => {
         
         const { position, requirement, list_type } = demonQuery.rows[0];
 
+        if (list_type === 'primary' && position > 150) {
+            return res.status(400).json({ error: "Submissions for the Legacy List are disabled." });
+        }
+
         if (list_type !== list) {
             return res.status(400).json({ error: "This level does not belong to the active list." });
         }
@@ -658,6 +662,13 @@ app.post('/api/admin/add-demon', isAdmin, async (req, res) => {
     const client = await pool.connect();
 
     try {
+        const userRes = await pool.query('SELECT role FROM users WHERE id = $1', [actorId]);
+        const userRole = userRes.rows[0]?.role;
+
+        if (parseInt(position) > 150 && userRole !== 'owner') {
+            return res.status(403).json({ error: "You can't place levels in the Legacy List." });
+        }
+
         const neighbors = await client.query(
             `SELECT name, position FROM demons 
              WHERE list_type = $3 AND (position = $1 OR position = $2 OR position = 75) 
@@ -777,6 +788,13 @@ app.post('/api/admin/move-demon', isAdmin, async (req, res) => {
 
     const client = await pool.connect();
     try {
+        const userRes = await pool.query('SELECT role FROM users WHERE id = $1', [actorId]);
+        const userRole = userRes.rows[0]?.role;
+
+        if ((parseInt(oldPosition) > 150 || parseInt(newPosition) > 150) && userRole !== 'owner') {
+            return res.status(403).json({ error: "Level is on the legacy list." });
+        }
+
         await client.query('BEGIN');
 
         const levelRes = await client.query('SELECT name, list_type FROM demons WHERE id = $1', [id]);
@@ -1117,8 +1135,15 @@ app.get('/api/leaderboard', async (req, res) => {
                         WHEN $1 = 'impossible' 
                             THEN 0
                         ELSE 
-                            COUNT(r.id) FILTER (WHERE r.percentage = 100 AND d.position > 75)
+                            COUNT(r.id) FILTER (WHERE r.percentage = 100 AND d.position > 75 AND d.position <= 150)
                     END as extended_completions,
+
+                    CASE
+                        WHEN $1 = 'impossible'
+                            THEN 0
+                        ELSE
+                            COUNT(r.id) FILTER (WHERE r.percentage = 100 AND d.position > 150)
+                    END as legacy_completions,
                     
                     CASE 
                         WHEN $1 = 'impossible' 
@@ -1451,6 +1476,11 @@ app.post('/api/submit-verification', async (req, res) => {
     const list = req.currentList === 'impossible' ? 'impossible' : 'primary';
 
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const placementOpinion = parseInt(opinion);
+    if (placementOpinion > 150) {
+        return res.status(400).json({ error: "You can't submit for the legacy list." });
+    }
 
     try {
         await pool.query(

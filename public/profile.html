@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
         .page-content {
             flex: 1 0 auto;
             width: 100%;
-            max-width: 780px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 50px 20px 120px;
             box-sizing: border-box;
@@ -23,7 +23,7 @@
             border-radius: var(--radius);
             border: 1px solid var(--border);
             border-bottom: 3px solid var(--border);
-            margin-bottom: 36px;
+            margin-bottom: 28px;
             text-align: center;
         }
 
@@ -54,6 +54,7 @@
             justify-content: center;
             gap: 48px;
             margin-top: 24px;
+            flex-wrap: wrap;
         }
 
         .stat-item { text-align: center; }
@@ -66,31 +67,10 @@
             margin-bottom: 6px;
         }
 
-        .record-card {
-            background: var(--surface);
-            padding: 18px 20px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--border);
-            transition: background 0.15s;
+        .points-tag {
+            color: var(--accent);
+            font-family: var(--font-display);
         }
-
-        .record-card:hover { background: var(--surface-2); }
-
-        .level-link { color: var(--text); text-decoration: none; font-weight: 600; }
-        .level-link:hover { color: var(--accent); }
-
-        .points-tag { color: var(--accent); font-family: var(--font-display); }
-        .rank-tag { color: var(--text-muted); margin-right: 10px; font-weight: 600; }
-
-        .completion { border-left-color: var(--accent); }
-        .progress { border-left-color: #d99a2b; }
-
-        h3 { color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px; font-size: 1.3em; }
 
         .back-link {
             display: inline-block;
@@ -124,6 +104,184 @@
             font-size: 1em;
             color: var(--text-muted);
         }
+
+        .info-wrap {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+
+        .info-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 800;
+            transition: all 0.15s;
+        }
+
+        .info-btn:hover {
+            border-color: var(--accent);
+            background: var(--surface-2);
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 48px;
+            right: 0;
+            width: 280px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+            padding: 16px;
+            text-align: left;
+            z-index: 20;
+        }
+
+        .info-panel.hidden {
+            display: none;
+        }
+
+        .info-panel h4 {
+            margin: 0 0 12px 0;
+            font-size: 1em;
+            color: var(--text);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 7px 0;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.93em;
+        }
+
+        .info-row:first-of-type {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .info-key {
+            color: var(--text-muted);
+        }
+
+        .info-value {
+            color: var(--text);
+            font-weight: 700;
+            text-align: right;
+        }
+
+        h3 {
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            margin: 26px 0 16px;
+            font-size: 1.3em;
+        }
+
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .completed-list {
+            line-height: 2.05;
+            color: var(--text);
+            font-size: 1rem;
+            word-break: break-word;
+            margin-top: 10px;
+        }
+
+        .completed-link {
+            text-decoration: none;
+            transition: color 0.15s, opacity 0.15s;
+            color: white;   
+        }
+
+        .completed-link:hover {
+            color: var(--accent);
+            opacity: 0.95;
+        }
+
+        .tier-main {
+            font-size: 1.08em;
+            font-weight: 800;
+        }
+
+        .tier-extended {
+            font-size: 0.98em;
+            font-weight: 650;
+        }
+
+        .tier-legacy {
+            font-size: 0.92em;
+            font-weight: 500;
+            opacity: 0.92;
+        }
+
+        .comma {
+            color: var(--text-muted);
+        }
+
+        .record-card {
+            background: var(--surface);
+            padding: 18px 20px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--border);
+            transition: background 0.15s;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .record-card:hover { background: var(--surface-2); }
+
+        .level-link { color: var(--text); text-decoration: none; font-weight: 600; }
+        .level-link:hover { color: var(--accent); }
+
+        .rank-tag {
+            color: var(--text-muted);
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .completion { border-left-color: var(--accent); }
+        .progress { border-left-color: #d99a2b; }
+
+        .section-empty {
+            color: #666;
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .section-subtext {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin: -6px 0 14px;
+        }
     </style>
 </head>
 <body>
@@ -137,6 +295,30 @@
                     <img id="trophy-icon" src="" alt="Trophy">
                     <span id="leaderboard-rank">#0</span>
                 </div>
+
+                <div class="info-wrap">
+                    <button class="info-btn" id="info-btn" type="button" onclick="toggleInfoPanel()">i</button>
+                    <div class="info-panel hidden" id="info-panel">
+                        <h4>Demonlist Stats</h4>
+                        <div class="info-row">
+                            <span class="info-key">Main</span>
+                            <span class="info-value" id="info-main-count">0</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-key">Extended</span>
+                            <span class="info-value" id="info-extended-count">0</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-key">Legacy</span>
+                            <span class="info-value" id="info-legacy-count">0</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-key">Joined</span>
+                            <span class="info-value" id="info-joined">N/A</span>
+                        </div>
+                    </div>
+                </div>
+
                 <h1 id="user-name-container">
                     <img id="role-badge" src="" class="mod-badge" style="display:none;">
                     <div>
@@ -144,20 +326,32 @@
                         <span id="user-id-display" class="user-id"></span>
                     </div>
                 </h1>
+
                 <div class="stats-grid">
                     <div class="stat-item">
                         <span class="stat-label">Total Points</span>
                         <span id="total-points" class="points-tag" style="font-size: 1.5em;">0.00</span>
                     </div>
-                    <div class="stat-item" id="levels-beaten-box">
-                        <span class="stat-label">Levels Beaten</span>
+                    <div class="stat-item" id="completions-stat">
+                        <span class="stat-label">List Completions</span>
                         <span id="demon-count" style="font-size: 1.5em; font-weight: bold;">0</span>
                     </div>
                 </div>
             </div>
 
-            <h3>Records</h3>
-            <div id="records-list"></div>
+            <div class="section-card" id="completed-section">
+                <div class="section-head">
+                    <h3 style="margin: 0;">Levels Beaten</h3>
+                </div>
+                <div id="completed-levels" class="completed-list"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-head">
+                    <h3 style="margin: 0;">Progress On</h3>
+                </div>
+                <div id="progress-list"></div>
+            </div>
         </div>
 
         <div id="error-display" style="display: none; text-align: center; margin-top: 50px;">
@@ -174,11 +368,55 @@
 
         if (isImpossibleList) {
             document.body.classList.add('impossible-list');
-            const levelsBeatenBox = document.getElementById('levels-beaten-box');
-            if (levelsBeatenBox) {
-                levelsBeatenBox.style.display = 'none';
-            }
         }
+
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getTier(position) {
+            const pos = parseInt(position);
+            if (pos <= 75) return 'main';
+            if (pos <= 150) return 'extended';
+            return 'legacy';
+        }
+
+        function tierLabel(position) {
+            const tier = getTier(position);
+            if (tier === 'main') return 'Main';
+            if (tier === 'extended') return 'Extended';
+            return 'Legacy';
+        }
+
+        function formatJoinedDate(joined) {
+            if (!joined) return 'N/A';
+            const d = new Date(joined);
+            if (Number.isNaN(d.getTime())) return String(joined);
+            return d.toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function toggleInfoPanel() {
+            const panel = document.getElementById('info-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            const wrap = document.querySelector('.info-wrap');
+            const panel = document.getElementById('info-panel');
+            if (!wrap || !panel) return;
+            if (!wrap.contains(e.target)) {
+                panel.classList.add('hidden');
+            }
+        });
 
         async function loadProfile() {
             const params = new URLSearchParams(window.location.search);
@@ -198,6 +436,10 @@
 
                 const data = await res.json();
                 document.getElementById('profile-display').style.display = 'block';
+                if (isImpossibleList) {
+                    document.getElementById('completed-section').style.display = 'none';
+                    document.getElementById('completions-stat').style.display = 'none';
+                }
                 
                 const lbTag = document.getElementById('leaderboard-tag');
                 const lbIcon = document.getElementById('trophy-icon');
@@ -252,15 +494,47 @@
 
                 document.getElementById('user-id-display').innerText = `ID: ${data.userId || 'N/A'}`;
                 document.getElementById('total-points').innerText = data.totalPoints;
-                
-                const completions = data.records.filter(r => parseInt(r.percentage) === 100).length;
-                document.getElementById('demon-count').innerText = completions;
 
-                const list = document.getElementById('records-list');
-                if (data.records.length === 0) {
-                    list.innerHTML = "<p style='color: #666; text-align: center; padding: 20px;'>This user hasn't submitted any records yet.</p>";
+                const records = Array.isArray(data.records) ? data.records : [];
+                const completed = records.filter(r => parseInt(r.percentage) === 100);
+                const completedListWorthy = completed.filter(r => parseInt(r.position) <= 150);
+                const progress = records.filter(r => parseInt(r.percentage) !== 100);
+
+                document.getElementById('demon-count').innerText = completedListWorthy.length;
+
+                const mainCount = completed.filter(r => getTier(r.position) === 'main').length;
+                const extendedCount = completed.filter(r => getTier(r.position) === 'extended').length;
+                const legacyCount = completed.filter(r => getTier(r.position) === 'legacy').length;
+
+                document.getElementById('info-main-count').innerText = mainCount;
+                document.getElementById('info-extended-count').innerText = extendedCount;
+                document.getElementById('info-legacy-count').innerText = legacyCount;
+                document.getElementById('info-joined').innerText = formatJoinedDate(data.joined);
+
+                const completedContainer = document.getElementById('completed-levels');
+                if (completed.length === 0) {
+                    completedContainer.innerHTML = "<div class='section-empty'>No completed levels yet.</div>";
                 } else {
-                    list.innerHTML = data.records.map(r => {
+                    completedContainer.innerHTML = completed.map((r, idx) => {
+                        const tier = getTier(r.position);
+                        const tierClass = tier === 'main' ? 'tier-main' : tier === 'extended' ? 'tier-extended' : 'tier-legacy';
+                        const label = tierLabel(r.position);
+                        const safeName = escapeHtml(r.name);
+                        const safeVideo = escapeHtml(r.video_url);
+
+                        return `
+                            <a href="${safeVideo}" target="_blank" rel="noopener" class="completed-link ${tierClass}">
+                                ${safeName}
+                            </a>${idx < completed.length - 1 ? '<span class="comma"> - </span>' : ''}
+                        `;
+                    }).join('');
+                }
+
+                const progressContainer = document.getElementById('progress-list');
+                if (progress.length === 0) {
+                    progressContainer.innerHTML = "<div class='section-empty'>No progress records.</div>";
+                } else {
+                    progressContainer.innerHTML = progress.map(r => {
                         const is100 = parseInt(r.percentage) === 100;
                         let textPercColor = "";
 
@@ -277,7 +551,7 @@
                                 <div>
                                     <span class="rank-tag">#${r.position}</span>
                                     <a href="/demon/${r.id}" class="level-link">
-                                        <span class="b">${r.name}</span>
+                                        <span class="b">${escapeHtml(r.name)}</span>
                                     </a>
                                     <span style="color: ${textPercColor}; font-size: 0.9em;">
                                         (${r.percentage}%)
@@ -285,7 +559,7 @@
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 20px;">
                                     <span class="points-tag">${r.points} pts</span>
-                                    <a href="${r.video_url}" target="_blank"
+                                    <a href="${escapeHtml(r.video_url)}" target="_blank" rel="noopener"
                                        style="color: var(--text-muted); text-decoration: none; font-size: 0.85em; border: 1px solid var(--border); padding: 6px 12px; border-radius: var(--radius-sm);">
                                          Watch
                                     </a>
@@ -294,6 +568,7 @@
                         `;
                     }).join('');
                 }
+
             } catch (err) {
                 console.error("Failed to load profile:", err);
             }
