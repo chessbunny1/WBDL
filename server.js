@@ -1050,6 +1050,57 @@ app.get('/api/profile/:username', async (req, res) => {
         
         const user = userResult.rows[0];
 
+        const recordsResult = await pool.query(`
+            SELECT 
+                r.id AS record_id,
+                r.percentage, 
+                r.video_url, 
+                d.name, 
+                d.position, 
+                d.requirement, 
+                d.id AS demon_id,
+                (
+                    SELECT COUNT(*) 
+                    FROM records r2 
+                    WHERE r2.demon_id = r.demon_id 
+                    AND r2.status = 'accepted' 
+                    AND r2.percentage = 100
+                    AND r2.list_type = $2 
+                    AND r2.id < r.id
+                ) AS completion_status
+            FROM records r
+            JOIN demons d ON r.demon_id = d.id
+            WHERE r.user_id = $1 AND r.status = 'accepted' AND r.list_type = $2 AND d.list_type = $2
+            ORDER BY d.position ASC
+        `, [user.id, list]);
+
+        const recordsWithPoints = recordsResult.rows.map(r => {
+            const basePoints = 250 * Math.exp(-0.0263 * (r.position - 1));
+            let awardedPoints = 0;
+
+            if (r.position > 150) {
+                awardedPoints = 0;
+            } else if (list === 'impossible') {
+                awardedPoints = basePoints * (r.percentage / 100);
+            } else {
+                if (r.percentage === 100) {
+                    awardedPoints = basePoints;
+                } else if (r.position <= 75 && r.percentage >= r.requirement) {
+                    awardedPoints = basePoints / 10;
+                } else {
+                    awardedPoints = 0;
+                }
+            }
+
+            return { 
+                ...r, 
+                points: awardedPoints.toFixed(2),
+                record_id: r.record_id,
+            };
+        });
+
+        const totalPoints = recordsWithPoints.reduce((sum, r) => sum + parseFloat(r.points), 0).toFixed(2);
+
         const rankResult = await pool.query(`
             WITH Leaderboard AS (
                 SELECT 
@@ -1088,61 +1139,6 @@ app.get('/api/profile/:username', async (req, res) => {
                     RANK() OVER (ORDER BY total_score DESC) as rank
                 FROM Leaderboard
                 WHERE total_score > 0
-            )
-            SELECT rank FROM RankedPlayers WHERE id = $1;
-        `, [user.id, list]);
-
-        const recordsWithPoints = recordsResult.rows.map(r => {
-            const basePoints = 250 * Math.exp(-0.0263 * (r.position - 1));
-            let awardedPoints = 0;
-
-            if (r.position > 150) {
-                awardedPoints = 0;
-            } else if (list === 'impossible') {
-                awardedPoints = basePoints * (r.percentage / 100);
-            } else {
-                if (r.percentage === 100) {
-                    awardedPoints = basePoints;
-                } else if (r.position <= 75 && r.percentage >= r.requirement) {
-                    awardedPoints = basePoints / 10;
-                } else {
-                    awardedPoints = 0;
-                }
-            }
-
-            return { 
-                ...r, 
-                points: awardedPoints.toFixed(2),
-                record_id: r.record_id,
-            };
-        });
-
-        const totalPoints = recordsWithPoints.reduce((sum, r) => sum + parseFloat(r.points), 0).toFixed(2);
-
-        const rankResult = await pool.query(`
-            WITH Leaderboard AS (
-                SELECT 
-                    u.id,
-                    SUM(
-                        CASE 
-                            WHEN $2 = 'impossible' THEN (250 * EXP(-0.0263 * (d.position - 1))) * (r.percentage / 100.0)
-                            ELSE
-                                CASE 
-                                    WHEN r.percentage = 100 THEN (250 * EXP(-0.0263 * (d.position - 1)))
-                                    WHEN d.position <= 75 AND r.percentage >= d.requirement THEN (250 * EXP(-0.0263 * (d.position - 1))) / 10
-                                    ELSE 0 
-                                END
-                        END
-                    ) as total_score
-                FROM users u
-                JOIN records r ON u.id = r.user_id
-                JOIN demons d ON r.demon_id = d.id
-                WHERE r.status = 'accepted' AND r.list_type = $2 AND d.list_type = $2
-                GROUP BY u.id
-            ),
-            RankedPlayers AS (
-                SELECT id, total_score, RANK() OVER (ORDER BY total_score DESC) as rank
-                FROM Leaderboard
             )
             SELECT rank FROM RankedPlayers WHERE id = $1;
         `, [user.id, list]);
