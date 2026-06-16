@@ -664,8 +664,8 @@ app.post('/api/admin/add-demon', isAdmin, async (req, res) => {
             msg += ` with a list requirement of **${requirement}%**.`;
 
             let pushes = [];
-            if (targetPos <= 75 && old75) pushes.push(`**${old75}** to the Extended List`);
-            if (targetPos <= 150 && old150) pushes.push(`**${old150}** to the Legacy List`);
+            if (targetPos <= 75 && old75) pushes.push(`**${old75}** into the Extended List`);
+            if (targetPos <= 150 && old150) pushes.push(`**${old150}** into the Legacy List`);
             
             if (pushes.length > 0) {
                 msg += `\nThis change pushes ${pushes.join(" and ")}.`;
@@ -861,8 +861,8 @@ app.post('/api/admin/move-demon', isAdmin, async (req, res) => {
 
             let pushes = [];
             if (newPos < oldPos) { 
-                if (newPos <= 75 && oldPos > 75 && old75) pushes.push(`**${old75}** to the Extended List`);
-                if (newPos <= 150 && oldPos > 150 && old150) pushes.push(`**${old150}** to the Legacy List`);
+                if (newPos <= 75 && oldPos > 75 && old75) pushes.push(`**${old75}** into the Extended List`);
+                if (newPos <= 150 && oldPos > 150 && old150) pushes.push(`**${old150}** into the Legacy List`);
             } else if (newPos > oldPos) { 
                 if (oldPos <= 75 && newPos >= 76 && old76) pushes.push(`**${old76}** back to the Main List`);
                 if (oldPos <= 150 && newPos >= 151 && old151) pushes.push(`**${old151}** back to the Extended List`);
