@@ -193,7 +193,7 @@
         </header>
 
         <div class="list-tabs" id="list-tabs-container" style="display: none;">
-            <div class="list-tab active" id="tab-main" onclick="switchListTab('main')">Main List</div>
+            <div class="list-tab active" id="tab-main" onclick="switchListTab('main')">Demon List</div>
             <div class="list-tab" id="tab-legacy" onclick="switchListTab('legacy')">Legacy List</div>
         </div>
 
@@ -326,6 +326,10 @@
                     `;
                 }
 
+                const showPlacement = currentListTab === 'main';
+                const showPoints = !isImpossibleList && showPlacement;
+                const rankHtml = showPlacement ? `<span class="rank">#${demon.position}</span>` : '';
+
                 return `
                     <a href="/demon/${demon.id}" style="text-decoration: none; color: inherit; display: block;">
                         <div class="demon-card">
@@ -334,11 +338,11 @@
                             </div>
                             <div class="card-body">
                                 <div class="card-main-content">
-                                    <span class="rank">#${demon.position}</span>
+                                    ${rankHtml}
                                     <div class="demon-info">
                                         <span class="b">${demon.name}</span>
                                         <div style="color: var(--text-muted); font-size: 0.85em; margin-top: 4px;">published by ${demon.author}</div>
-                                        ${!isImpossibleList ? sideContentHtml : ''}
+                                        ${showPoints ? sideContentHtml : ''}
                                     </div>
                                 </div>
                                 ${isImpossibleList ? sideContentHtml : ''}
