@@ -1562,33 +1562,28 @@ app.get('/api/changelog', async (req, res) => {
 
     try {
         const result = await pool.query(`
-            SELECT demon_name, change_type, old_position, new_position, created_at 
+            SELECT 
+                demon_id,
+                demon_name, 
+                change_type, 
+                old_position, 
+                new_position, 
+                created_at 
             FROM changelog 
-            WHERE change_type IN ('added', 'moved', 'deleted') AND list_type = $1
-            ORDER BY created_at DESC LIMIT 50
+            WHERE change_type IN ('added', 'moved', 'deleted') 
+              AND list_type = $1
+            ORDER BY created_at DESC 
+            LIMIT 50
         `, [list]);
 
         const formattedLogs = result.rows.map(log => {
-            let text = "";
-            let colorClass = "";
-
-            if (log.change_type === 'added') {
-                text = `**${log.demon_name}** was placed at **#${log.new_position}**`;
-                colorClass = "text-added";
-            } 
-            else if (log.change_type === 'moved') {
-                text = `**${log.demon_name}** was moved from **#${log.old_position}** to **#${log.new_position}**`;
-                colorClass = "text-moved";
-            } 
-            else if (log.change_type === 'deleted') {
-                text = `**${log.demon_name}** was removed from the list`;
-                colorClass = "text-deleted";
-            }
-
             return {
                 date: log.created_at,
-                text: text,
-                type: colorClass
+                demonId: log.demon_id,
+                demonName: log.demon_name,
+                changeType: log.change_type,
+                oldPosition: log.old_position,
+                newPosition: log.new_position,
             };
         });
 
