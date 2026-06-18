@@ -159,29 +159,33 @@ async function sendVerificationEmail(targetEmail, username, link) {
         to: targetEmail,
         subject: 'Verify your WBDL Account',
         html: `
-        <div style="font-family: sans-serif; background-color: #121212; color: white; padding: 40px; border-radius: 8px; max-width: 600px; margin: auto; border: 1px solid #333;">
-            <h1 style="color: #0053c2; text-align: center;">Welcome, ${username}!</h1>
+        <div style="font-family: Comfortaa, Arial, sans-serif; background-color: #181b1e; color: #f2f3f5; padding: 40px; border-radius: 12px; max-width: 600px; margin: auto; border: 1px solid #2a2f36;">
+            <h1 style="font-family: Comfortaa, Arial, sans-serif; color: #00e676; text-align: center; margin: 0 0 22px; font-size: 28px; line-height: 1.2;">
+                Welcome, ${username}!
+            </h1>
             
-            <p style="font-size: 16px; line-height: 1.6; text-align: center; color: #ccc;">
+            <p style="font-size: 16px; line-height: 1.6; text-align: center; color: #8b929c; margin: 0;">
                 Thanks for signing up for the Web Browser Demonlist! To get started, activate your account by clicking the button below.
             </p>
 
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${link}" style="background-color: #0053c2; color: black; padding: 14px 28px; font-weight: bold; text-decoration: none; border-radius: 4px; display: inline-block;">
+                <a href="${link}" style="background-color: #00e676; color: #000; padding: 14px 28px; font-weight: 800; text-decoration: none; border-radius: 8px; display: inline-block; font-size: 15px;">
                     Verify my Account
                 </a>
             </div>
 
-            <div style="background-color: #1a1a1a; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px;">
-                <p style="margin: 0 0 10px 0; color: #fff; font-size: 14px;">Also, feel free to join the discord!</p>
+            <div style="background-color: #20242a; padding: 20px; border-radius: 8px; text-align: center; margin-top: 20px; border: 1px solid #2a2f36;">
+                <p style="margin: 0 0 10px 0; color: #f2f3f5; font-size: 14px;">
+                    Also, feel free to join the discord!
+                </p>
                 <a href="https://discord.gg/Pz8TehUPmP" style="color: #5865F2; text-decoration: none; font-weight: bold; font-size: 16px;">
-                    discord.gg/Pz8TehUPmP
+                discord.gg/Pz8TehUPmP
                 </a>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+            <hr style="border: 0; border-top: 1px solid #2a2f36; margin: 24px 0;">
             
-            <p style="font-size: 12px; color: #555; text-align: center;">
+            <p style="font-size: 12px; color: #5a616b; text-align: center; margin: 0;">
                 If you didn't create an account, simply ignore this email.
             </p>
         </div>
@@ -195,15 +199,24 @@ async function sendResetEmail(targetEmail, username, link) {
         to: targetEmail,
         subject: 'WBDL Password Reset',
         html: `
-        <div style="font-family: sans-serif; background-color: #121212; color: white; padding: 40px; border-radius: 8px; max-width: 600px; margin: auto; border: 1px solid #333;">
-            <h1 style="color: #0053c2; text-align: center;">Password Reset Request</h1>
-            <p style="text-align: center; color: #ccc;">Hello ${username}, we received a request to reset your account's password. Click the button below to proceed.</p>
+        <div style="font-family: Nunito, Arial, sans-serif; background-color: #181b1e; color: #f2f3f5; padding: 40px; border-radius: 12px; max-width: 600px; margin: auto; border: 1px solid #2a2f36;">
+            <h1 style="font-family: Comfortaa, Arial, sans-serif; color: #00e676; text-align: center; margin: 0 0 22px; font-size: 28px; line-height: 1.2;">
+                Password Reset Request
+            </h1>
+
+            <p style="text-align: center; color: #8b929c; font-size: 16px; line-height: 1.6; margin: 0;">
+                Hello ${username}, we received a request to reset your account's password. Click the button below to proceed.
+            </p>
+
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${link}" style="background-color: #0053c2; color: black; padding: 14px 28px; font-weight: bold; text-decoration: none; border-radius: 4px; display: inline-block;">
+                <a href="${link}" style="background-color: #00e676; color: #000; padding: 14px 28px; font-weight: 800; text-decoration: none; border-radius: 8px; display: inline-block; font-size: 15px;">
                     Reset Password
                 </a>
             </div>
-            <p style="font-size: 12px; color: #555; text-align: center;">This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+
+            <p style="font-size: 12px; color: #5a616b; text-align: center; margin: 0;">
+                This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.
+            </p>
         </div>
         `
     });
