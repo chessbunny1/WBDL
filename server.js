@@ -50,6 +50,43 @@ const validatePassword = (password) => {
     return null;
 };
 
+const PROFILE_ICON_TYPES = new Set(['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider', 'swing', 'jetpack']);
+
+const cleanProfileText = (value, maxLength) => {
+    const text = String(value ?? '').trim();
+    return text.length > maxLength ? text.slice(0, maxLength) : text;
+};
+
+const cleanProfileIcon = (icon = {}) => {
+    const type = PROFILE_ICON_TYPES.has(icon.type) ? icon.type : 'cube';
+    const id = Math.min(999, Math.max(1, parseInt(icon.id, 10) || 1));
+    const color1 = Math.min(999, Math.max(0, parseInt(icon.color1, 10) || 12));
+    const color2 = Math.min(999, Math.max(0, parseInt(icon.color2, 10) || 3));
+    return { type, id, color1, color2 };
+};
+
+const serializeProfileUser = (user) => ({
+    displayName: user.display_name || '',
+    bio: user.bio || '',
+    pronouns: user.pronouns || '',
+    country: user.country || '',
+    socialLinks: {
+        youtube: user.social_youtube || '',
+        twitter: user.social_twitter || '',
+        twitch: user.social_twitch || '',
+        discord: user.social_discord || '',
+        reddit: user.social_reddit || '',
+        gdbrowser: user.social_gdbrowser || '',
+    },
+    icon: {
+        type: user.icon_type || 'cube',
+        id: parseInt(user.icon_id, 10) || 1,
+        color1: parseInt(user.color1, 10) || 12,
+        color2: parseInt(user.color2, 10) || 3,
+    },
+});
+
+
 app.get('/api/demons', async (req, res) => {
     const list = req.currentList === 'impossible' ? 'impossible' : 'primary'; 
     try {
@@ -340,7 +377,7 @@ app.get('/api/me', async (req, res) => {
     if (req.session.userId) {
         try {
             const user = await pool.query(
-                'SELECT username, role FROM users WHERE id = $1', 
+                'SELECT username, role, display_name, icon_type, icon_id, color1, color2 FROM users WHERE id = $1', 
                 [req.session.userId]
             );
 
@@ -350,6 +387,13 @@ app.get('/api/me', async (req, res) => {
                     loggedIn: true, 
                     username: userData.username, 
                     role: userData.role,
+                    displayName: userData.display_name || '',
+                    icon: {
+                        type: userData.icon_type || 'cube',
+                        id: parseInt(userData.icon_id, 10) || 1,
+                        color1: parseInt(userData.color1, 10) || 12,
+                        color2: parseInt(userData.color2, 10) || 3,
+                    },
                 });
             } else {
                 res.json({ loggedIn: false });
@@ -1055,7 +1099,11 @@ app.get('/api/profile/:username', async (req, res) => {
 
     try {
         const userResult = await pool.query(
-            'SELECT id, username, created_at, role FROM users WHERE username = $1', 
+            `SELECT id, username, created_at, role,
+                    display_name, bio, pronouns, country,
+                    social_youtube, social_twitter, social_twitch, social_discord, social_reddit, social_gdbrowser,
+                    icon_type, icon_id, color1, color2
+             FROM users WHERE username = $1`, 
             [username]
         );
         
@@ -1166,6 +1214,7 @@ app.get('/api/profile/:username', async (req, res) => {
             records: recordsWithPoints,
             role: user.role,
             userId: user.id,
+            ...serializeProfileUser(user),
         });
     } catch (err) {
         console.error(err);
@@ -1313,6 +1362,99 @@ app.get('/api/demons/:id', async (req, res) => {
     }
 });
 
+
+app.get('/api/settings/profile', async (req, res) => {
+    if (!req.session.userId) return res.status(401).json({ error: "Unauthorized" });
+
+    try {
+        const userResult = await pool.query(`
+            SELECT username,
+                   display_name, bio, pronouns, country,
+                   social_youtube, social_twitter, social_twitch, social_discord, social_reddit, social_gdbrowser,
+                   icon_type, icon_id, color1, color2
+            FROM users
+            WHERE id = $1
+        `, [req.session.userId]);
+
+        if (userResult.rows.length === 0) return res.status(404).json({ error: "User not found" });
+
+        const user = userResult.rows[0];
+        res.json({
+            username: user.username,
+            ...serializeProfileUser(user),
+        });
+    } catch (err) {
+        console.error("Profile settings load error:", err);
+        res.status(500).json({ error: "Server error." });
+    }
+});
+
+app.post('/api/settings/profile', async (req, res) => {
+    if (!req.session.userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const socialLinks = req.body.socialLinks || {};
+    const icon = cleanProfileIcon(req.body.icon || {});
+
+    const profile = {
+        displayName: cleanProfileText(req.body.displayName, 40),
+        bio: cleanProfileText(req.body.bio, 500),
+        pronouns: cleanProfileText(req.body.pronouns, 60),
+        country: cleanProfileText(req.body.country, 80),
+        youtube: cleanProfileText(socialLinks.youtube, 200),
+        twitter: cleanProfileText(socialLinks.twitter, 200),
+        twitch: cleanProfileText(socialLinks.twitch, 200),
+        discord: cleanProfileText(socialLinks.discord, 80),
+        reddit: cleanProfileText(socialLinks.reddit, 200),
+        gdbrowser: cleanProfileText(socialLinks.gdbrowser, 200),
+        iconType: icon.type,
+        iconId: icon.id,
+        color1: icon.color1,
+        color2: icon.color2,
+    };
+
+    try {
+        await pool.query(`
+            UPDATE users
+            SET display_name = $1,
+                bio = $2,
+                pronouns = $3,
+                country = $4,
+                social_youtube = $5,
+                social_twitter = $6,
+                social_twitch = $7,
+                social_discord = $8,
+                social_reddit = $9,
+                social_gdbrowser = $10,
+                icon_type = $11,
+                icon_id = $12,
+                color1 = $13,
+                color2 = $14
+            WHERE id = $15
+        `, [
+            profile.displayName,
+            profile.bio,
+            profile.pronouns,
+            profile.country,
+            profile.youtube,
+            profile.twitter,
+            profile.twitch,
+            profile.discord,
+            profile.reddit,
+            profile.gdbrowser,
+            profile.iconType,
+            profile.iconId,
+            profile.color1,
+            profile.color2,
+            req.session.userId,
+        ]);
+
+        res.json({ message: "Profile updated successfully!" });
+    } catch (err) {
+        console.error("Profile settings update error:", err);
+        res.status(500).json({ error: "Server error." });
+    }
+});
+
 app.post('/api/settings/username', async (req, res) => {
     if (!req.session.userId) return res.status(401).json({ error: "Unauthorized" });
     
@@ -1335,6 +1477,7 @@ app.post('/api/settings/username', async (req, res) => {
             [username, req.session.userId]
         );
 
+        req.session.username = username;
         res.json({ message: "Username updated successfully!" });
     } catch (err) {
         console.error("Username update error:", err);
