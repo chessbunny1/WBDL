@@ -104,6 +104,15 @@
             document.body.classList.add('impossible-list');
         }
 
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         async function loadStaff() {
             try {
                 const res = await fetch('/api/staff');
@@ -111,7 +120,7 @@
                 const container = document.getElementById('staff-container');
 
                 const sections = [
-                    { title: 'Owner', key: 'owners', class: 'rank-owner', badge: 'assets/eldermoderator.png' },
+                    { title: 'Owner', key: 'owners', class: 'rank-owner', badge: 'assets/owner.png' },
                     { title: 'Admins', key: 'admins', class: 'rank-admin', badge: 'assets/eldermoderator.png' },
                     { title: 'Moderators', key: 'moderators', class: 'rank-moderator', badge: 'assets/moderator.png' }
                 ];
@@ -124,12 +133,17 @@
                         <div class="staff-section">
                             <h2 class="${section.class}">${section.title}</h2>
                             <div class="staff-flex">
-                                ${members.map(m => `
-                                    <div class="staff-card">
-                                        <img src="/${section.badge}" class="staff-badge" alt="Badge">
-                                        <a href="/profile?user=${m.username}">${m.username}</a>
-                                    </div>
-                                `).join('')}
+                                ${members.map(m => {
+                                    const displayName = String(m.displayName || m.username || '').trim();
+                                    const username = String(m.username || '').trim();
+
+                                    return `
+                                        <div class="staff-card">
+                                            <img src="/${section.badge}" class="staff-badge" alt="Badge">
+                                            <a href="/profile?user=${encodeURIComponent(username)}">${escapeHtml(displayName)}</a>
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
                     `;

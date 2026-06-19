@@ -2037,13 +2037,15 @@
             updateModalPreview();
         }
 
-        function toggleGlow() {
+        async function toggleGlow() {
             draftIcon.glow = Number(draftIcon.glow) >= 0 ? -1 : 1;
             if (colorTarget === 'glow') {
                 colorTarget = 'color1';
             }
-            updateModalPreview();
-            commitDraftIconChange();
+
+            await updateModalPreview();
+            await commitDraftIconChange();
+            await refreshVisibleIconGridColors();
         }
 
         function updateGlowToggle() {

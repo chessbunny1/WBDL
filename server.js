@@ -1770,7 +1770,7 @@ app.get('/api/changelog', async (req, res) => {
 app.get('/api/staff', async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT username, role 
+            SELECT username, display_name, role 
             FROM users 
             WHERE role IN ('owner', 'admin', 'moderator')
             ORDER BY 
@@ -1779,13 +1779,20 @@ app.get('/api/staff', async (req, res) => {
                     WHEN 'admin' THEN 2 
                     WHEN 'moderator' THEN 3 
                 END ASC, 
+                LOWER(COALESCE(NULLIF(display_name, ''), username)) ASC,
                 username ASC
         `);
 
+        const staffRows = result.rows.map(u => ({
+            username: u.username,
+            displayName: u.display_name || u.username,
+            role: u.role
+        }));
+
         const staff = {
-            owners: result.rows.filter(u => u.role === 'owner'),
-            admins: result.rows.filter(u => u.role === 'admin'),
-            moderators: result.rows.filter(u => u.role === 'moderator')
+            owners: staffRows.filter(u => u.role === 'owner'),
+            admins: staffRows.filter(u => u.role === 'admin'),
+            moderators: staffRows.filter(u => u.role === 'moderator')
         };
 
         res.json(staff);

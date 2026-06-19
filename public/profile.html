@@ -1309,6 +1309,7 @@
                 twitter: '/assets/socials/twitter.png',
                 twitch: '/assets/socials/twitch.png',
                 discord: '/assets/socials/discord.png',
+                reddit: '/assets/socials/reddit.png',
                 gdbrowser: '/assets/socials/gdbrowser.png',
             };
             return icons[platform] || '';
@@ -1404,6 +1405,12 @@
             const twitchHref = normalizeSocialUrl('twitch', twitchValue);
             if (twitchHref) {
                 socialParts.push(makeSocialIcon('twitch', 'Twitch', twitchHref));
+            }
+
+            const redditValue = socialLinks.reddit;
+            const redditHref = normalizeSocialUrl('reddit', redditValue);
+            if (redditHref) {
+                socialParts.push(makeSocialIcon('reddit', 'Reddit', redditHref));
             }
 
             const gdBrowserValue = socialLinks.gdbrowser;
@@ -1723,7 +1730,7 @@
 
                 if (data.role === 'owner') {
                     nameEl.style.color = '#00e676';
-                    badgeEl.src = '/assets/eldermoderator.png';
+                    badgeEl.src = '/assets/owner.png';
                     badgeEl.style.display = 'block';
                 } else if (data.role === 'admin') {
                     nameEl.style.color = '#55acee';
